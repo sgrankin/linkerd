@@ -34,7 +34,7 @@ trait Netty4DispatcherBase[SendMsg <: Message, RecvMsg <: Message] {
   protected[this] val streamTTLSecs: Duration = 60.seconds // TODO: is this reasonable? should this be configurable?
   private[this] trait SelfReaping {
     def id: Int
-    log.trace("[%s S:%d] stream %d will reap itself in %s seconds", prefix, id, id, streamTTLSecs)
+    log.debug("[%s S:%d] stream %s will reap itself in %s seconds", prefix, id, this, streamTTLSecs)
     Future.sleep(streamTTLSecs).ensure {
       val _ = streams.remove(id)
       log.debug("[%s S:%d] reaped", prefix, id)
