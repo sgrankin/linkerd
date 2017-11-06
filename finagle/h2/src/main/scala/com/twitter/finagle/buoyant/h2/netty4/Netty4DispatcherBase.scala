@@ -210,6 +210,7 @@ trait Netty4DispatcherBase[SendMsg <: Message, RecvMsg <: Message] {
           st.remoteReset(err)
         case _ =>
       }
+      false
     }
 
   protected[this] def goAway(err: GoAway, deadline: Time = Time.Top): Future[Unit] = {
