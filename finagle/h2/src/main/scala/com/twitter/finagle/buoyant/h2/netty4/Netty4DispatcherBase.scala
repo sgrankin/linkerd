@@ -35,9 +35,11 @@ trait Netty4DispatcherBase[SendMsg <: Message, RecvMsg <: Message] {
   private[this] trait SelfReaping {
     def id: Int
     log.debug("[%s S:%d] stream %s will reap itself in %s seconds", prefix, id, this, streamTTLSecs)
+    log.debug("streams: %s", streams)
     Future.sleep(streamTTLSecs).ensure {
       val _ = streams.remove(id)
       log.debug("[%s S:%d] reaped", prefix, id)
+      log.debug("streams: %s", streams)
     }
   }
 
@@ -193,12 +195,22 @@ trait Netty4DispatcherBase[SendMsg <: Message, RecvMsg <: Message] {
     if (closed.compareAndSet(false, true)) {
       log.debug("[%s] resetting all streams: %s", prefix, err)
       streams.values.asScala.foreach {
-        case StreamOpen(st) => st.remoteReset(err)
+        case StreamOpen(st) =>
+          log.debug("[%s] reset stream %s", prefix, st)
+          st.remoteReset(err)
         case _ =>
       }
       demuxing.raise(Failure(err).flagged(Failure.Interrupted))
       true
-    } else false
+    } else {
+      log.debug("[%s] already closed, but checking for unreset streams: %s", prefix, err)
+      streams.values.asScala.foreach {
+        case StreamOpen(st) =>
+          log.debug("[%s] reset stream %s", prefix, st)
+          st.remoteReset(err)
+        case _ =>
+      }
+    }
 
   protected[this] def goAway(err: GoAway, deadline: Time = Time.Top): Future[Unit] = {
     log.debug("[%s] go away: %s", prefix, err)
