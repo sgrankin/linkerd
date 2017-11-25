@@ -73,8 +73,8 @@ object Grpc extends Base {
   /** sbt-protobuf, without protobuf-java */
   val grpcGenSettings =
     protobufSettings ++ inConfig(protobufConfig)(Seq(
-      javaSource <<= (javaSource in Compile),
-      scalaSource <<= (sourceManaged in Compile) { _ / "compiled_protobuf" },
+      javaSource <<= (sourceManaged in Compile),
+      scalaSource <<= (sourceManaged in Compile),
       generatedTargets <<= scalaSource { d => Seq(d -> "*.pb.scala") },
       protoc := "./protoc",
       grpcGenExec <<= grpcGenExec0,
