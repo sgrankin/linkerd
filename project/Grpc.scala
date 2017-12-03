@@ -45,25 +45,23 @@ object Grpc extends Base {
   // plugin is then linked into a temporary directory so that it
   // may be safely added to the PATH without exposing unintended
   // executables.
-  private[this] def grpcGenExec0 =
-    (assembly in gen, target).map[Option[File]] { (exec, targetDir) =>
-      val link = IO.createUniqueDirectory(targetDir) / "protoc-gen-io.buoyant.grpc"
-      IO.copyFile(exec, link)
+  private[this] lazy val grpcGenExec0 = Def.task {
+      val link = IO.createUniqueDirectory(target.value) / "protoc-gen-io.buoyant.grpc"
+      IO.copyFile((assembly in gen).value, link)
       link.setExecutable(true)
       Some(link)
     }
 
   // Ensure that the protoc-gen-io.buoyant.grpc plugin has been
   // assembled and is on the PATH when protoc runs.
-  private[this] def runProtoc0 =
-    (streams, protoc, grpcGenExec).map { (streams, protoc, genExec) =>
-      val log = streams.log
-      val env = genExec match {
+  private[this] lazy val runProtoc0 = Def.task {
+      val log = streams.value.log
+      val env = grpcGenExec.value match {
         case None => Map.empty[String, String]
         case Some(ge) => Map("PATH" -> s"${ge.getCanonicalFile.getParent}:${EnvPath}")
       }
       (args: Seq[String]) => {
-        val cmd = protoc +: args
+        val cmd = protoc.value +: args
         env.foreach { case (k, v) => log.debug(s":; export ${k}=${v}") }
         log.debug(":; " + cmd.mkString(" "))
         Process(cmd, None, env.toSeq:_*) ! log
@@ -73,22 +71,21 @@ object Grpc extends Base {
   /** sbt-protobuf, without protobuf-java */
   val grpcGenSettings =
     protobufSettings ++ inConfig(protobufConfig)(Seq(
-      javaSource <<= (sourceManaged in Compile),
-      scalaSource <<= (sourceManaged in Compile),
-      generatedTargets <<= scalaSource { d => Seq(d -> "*.pb.scala") },
+      javaSource := (sourceManaged in Compile).value,
+      scalaSource := (sourceManaged in Compile).value,
+      generatedTargets := Seq(scalaSource.value -> "*.pb.scala"),
       protoc := "./protoc",
-      grpcGenExec <<= grpcGenExec0,
-      runProtoc <<= runProtoc0,
-      protocOptions <<= scalaSource { ss =>
-        Seq(s"--io.buoyant.grpc_out=plugins=grpc:${ss.getCanonicalPath}")
-      }
+      grpcGenExec := grpcGenExec0.value,
+      runProtoc := runProtoc0.value,
+      protocOptions :=
+        Seq(s"--io.buoyant.grpc_out=plugins=grpc:${scalaSource.value.getCanonicalPath}")
     )) ++ Seq(
       // Sbt has trouble if scalariform rewrites the generated code
       excludeFilter in ScalariformKeys.format := "*.pb.scala",
       coverageExcludedFiles := """.*\.pb\.scala""",
 
       // We don't need protobuf-java.
-      libraryDependencies <<= libraryDependencies(_.filterNot(_.name == "protobuf-java"))
+      libraryDependencies := libraryDependencies.value.filterNot(_.name == "protobuf-java")
     )
 
   case class GrpcProject(project: Project) {
