@@ -27,4 +27,4 @@ addSbtPlugin("pl.project13.scala" % "sbt-jmh" % "0.2.27")
 addSbtPlugin("com.jsuereth" % "sbt-pgp" % "1.0.0")
 
 // our grpc building extends the wrapped sbt-protobuf
-addSbtPlugin("com.github.gseitz" % "sbt-protobuf" % "0.5.3")
+addSbtPlugin("com.github.gseitz" % "sbt-protobuf" % "0.6.3")

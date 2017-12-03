@@ -3,7 +3,7 @@ import sbt._
 import sbt.Keys._
 import sbtassembly.AssemblyKeys._
 import sbtdocker.DockerKeys._
-import sbtprotobuf.ProtobufPlugin._
+import sbtprotobuf.ProtobufPlugin.autoImport._
 import scala.language.implicitConversions
 import scoverage.ScoverageKeys._
 
@@ -62,7 +62,7 @@ object Grpc {
         case Some(ge) => Map("PATH" -> s"${ge.getCanonicalFile.getParent}:${EnvPath}")
       }
       (args: Seq[String]) => {
-        val cmd = protoc.value +: args
+        val cmd = protobufProtoc.value +: args
         env.foreach { case (k, v) => log.debug(s":; export ${k}=${v}") }
         log.debug(":; " + cmd.mkString(" "))
         Process(cmd, None, env.toSeq:_*) ! log
@@ -74,11 +74,11 @@ object Grpc {
     protobufSettings ++ inConfig(protobufConfig)(Seq(
       javaSource := (sourceManaged in Compile).value,
       scalaSource := (sourceManaged in Compile).value,
-      generatedTargets := Seq(scalaSource.value -> "*.pb.scala"),
-      protoc := "./protoc",
+      protobufGeneratedTargets := Seq(scalaSource.value -> "*.pb.scala"),
+      protobufProtoc := "./protoc",
       grpcGenExec := grpcGenExec0.value,
-      runProtoc := runProtoc0.value,
-      protocOptions :=
+      protobufRunProtoc := runProtoc0.value,
+      protobufProtocOptions :=
         Seq(s"--io.buoyant.grpc_out=plugins=grpc:${scalaSource.value.getCanonicalPath}")
     )) ++ Seq(
       // Sbt has trouble if scalariform rewrites the generated code
