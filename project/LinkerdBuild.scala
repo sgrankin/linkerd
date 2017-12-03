@@ -6,7 +6,7 @@ import sbtdocker.DockerKeys._
 import sbtunidoc.Plugin._
 import scoverage.ScoverageKeys._
 
-object LinkerdBuild extends Base {
+object LinkerdBuild {
   import Base._
   import Grpc._
 
@@ -738,10 +738,7 @@ object LinkerdBuild extends Base {
   val linkerdTls = Linkerd.tls
   val linkerdFailureAccrual = Linkerd.failureAccrual
 
-  // Unified documentation via the sbt-unidoc plugin
-  val all = project("all", file("."))
-    .settings(aggregateSettings ++ unidocSettings)
-    .aggregate(
+  val aggregates: Seq[ProjectReference] = Seq(
       admin,
       configCore,
       consul,
@@ -762,5 +759,13 @@ object LinkerdBuild extends Base {
       Router.all,
       Telemetry.all,
       Mesh.all
-    )
+    ).map(p => LocalProject(p.id))
+}
+
+object LinkerdBuildPlugin extends AutoPlugin {
+  override def extraProjects: Seq[Project] =
+    ReflectUtilities.allVals[Project](Base).values.toSeq ++
+      ReflectUtilities.allVals[Project](Grpc).values.toSeq ++
+      ReflectUtilities.allVals[Project](Finagle).values.toSeq ++
+      ReflectUtilities.allVals[Project](LinkerdBuild).values.toSeq
 }

@@ -3,7 +3,8 @@ import sbt.Keys.publishArtifact
 import sbt._
 
 /** Finagle protocol extensions. */
-object Finagle extends Base {
+object Finagle {
+  import Base._
 
   val buoyantCore = projectDir("finagle/buoyant")
     .withTwitterLibs(Deps.finagle("netty4"))

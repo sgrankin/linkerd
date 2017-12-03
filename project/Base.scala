@@ -24,13 +24,6 @@ object Base {
 
   val configFile = settingKey[File]("path to config file")
   val runtimeConfiguration = settingKey[Configuration]("runtime configuration")
-}
-
-/**
- * Base project configuration.
- */
-class Base extends Build {
-  import Base._
 
   val headVersion = "1.3.3"
 
