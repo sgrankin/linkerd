@@ -123,11 +123,11 @@ class ZkDtabStore(
     Future.collectToTry(
       Seq(
         zkSession.zk.create(
-        path,
-        Some(Buf.Utf8(dtab.show)),
-        acls.map(ZkDtabStore.zkAcl),
-        CreateMode.Persistent
-      ).unit,
+          path,
+          Some(Buf.Utf8(dtab.show)),
+          acls.map(ZkDtabStore.zkAcl),
+          CreateMode.Persistent
+        ).unit,
         zkSession.zk.setData(path, Some(Buf.Utf8(dtab.show)), None).unit
       )
     ).flatMap {

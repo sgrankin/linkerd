@@ -10,7 +10,7 @@ import org.scalatest._
 
 class KeyTest extends FunSuite with Exceptions {
 
-  private[this]type Params = Map[String, Seq[String]]
+  private[this] type Params = Map[String, Seq[String]]
 
   private[this] def getParam(params: Params, param: String): Option[String] =
     params.get(param).flatMap(_.headOption)

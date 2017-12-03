@@ -107,6 +107,7 @@ object Base {
 
   val scalariformSettings = baseScalariformSettings ++ Seq(
     ScalariformKeys.preferences := ScalariformKeys.preferences.value
+      .setPreference(DanglingCloseParenthesis, Force)
       .setPreference(DoubleIndentClassDeclaration, false)
       .setPreference(PreserveSpaceBeforeArguments, false)
       .setPreference(SpacesAroundMultiImports,     false)

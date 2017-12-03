@@ -43,7 +43,6 @@ case class IngressIdentifierConfig(
   port: Option[Port],
   namespace: Option[String],
   ingressClassAnnotation: Option[String]
-
 ) extends HttpIdentifierConfig with ClientConfig {
   @JsonIgnore
   override def portNum: Option[Int] = port.map(_.port)

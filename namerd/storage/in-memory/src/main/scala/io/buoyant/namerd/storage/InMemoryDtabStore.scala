@@ -14,8 +14,8 @@ import java.nio.ByteBuffer
  */
 class InMemoryDtabStore(namespaces: Map[String, Dtab]) extends DtabStore {
   private[this] val dtabStatesMu = new {}
-  private[InMemoryDtabStore]type DtabState = Option[VersionedDtab]
-  private[InMemoryDtabStore]type DtabStateVar = Var[DtabState] with Updatable[DtabState]
+  private[InMemoryDtabStore] type DtabState = Option[VersionedDtab]
+  private[InMemoryDtabStore] type DtabStateVar = Var[DtabState] with Updatable[DtabState]
   private[this] var dtabStates: Map[String, DtabStateVar] =
     namespaces.mapValues { dtab =>
       Var[DtabState](Some(VersionedDtab(dtab, InMemoryDtabStore.InitialVersion)))

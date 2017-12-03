@@ -141,7 +141,7 @@ object DstBindingFactory {
     bindingTimeout: BindingTimeout = BindingTimeout.default,
     idleTtl: IdleTtl = IdleTtl.default
   )(implicit timer: Timer = DefaultTimer) extends DstBindingFactory[Req, Rsp] {
-    private[this]type Cache[Key] = ServiceFactoryCache[Key, Req, Rsp]
+    private[this] type Cache[Key] = ServiceFactoryCache[Key, Req, Rsp]
 
     def apply(dst: Dst.Path, conn: ClientConnection): Future[Service[Req, Rsp]] = {
       val exc = new RequestTimeoutException(bindingTimeout.timeout, s"binding ${dst.path.show}")

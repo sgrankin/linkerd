@@ -15,7 +15,7 @@ class DecodingStreamTest extends FunSuite {
     val decodedStream = new DecodingStream[Int] {
       override protected[this] val frames = h2.Stream(frameQ)
       override protected[this] val decoder = { bb: java.nio.ByteBuffer =>
-        // instead of actually decoding a message, we just 
+        // instead of actually decoding a message, we just
         decodedLength += bb.remaining
         bb.remaining
       }

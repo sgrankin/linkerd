@@ -46,7 +46,7 @@ class StreamingNamerClient(
   /* Activities are cached forever.  This is cheap because they are only active
    * while being observed. */
 
-  private[this]type BindKey = (Dtab, Path)
+  private[this] type BindKey = (Dtab, Path)
 
   private[this] val bindCache = CacheBuilder.newBuilder()
     .build[BindKey, Activity[NameTree[Name.Bound]]](

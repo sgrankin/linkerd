@@ -24,7 +24,7 @@ private[runtime] trait DecodingStream[+T] extends Stream[T] {
   protected[this] def getStatus: h2.Frame.Trailers => GrpcStatus
 
   // convenience
-  private[this]type Releasable = Stream.Releasable[T]
+  private[this] type Releasable = Stream.Releasable[T]
 
   /**
    * Holds HTTP/2 data that has not yet been returned from recv().

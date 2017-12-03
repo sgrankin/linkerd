@@ -15,8 +15,8 @@ import java.net.SocketAddress
 
 object H2 extends Client[Request, Response] with Server[Request, Response] {
 
-  private[this]type Http2FrameTransporter = Transporter[Http2Frame, Http2Frame, TransportContext]
-  private[this]type Http2FrameTransport = Transport[Http2Frame, Http2Frame]
+  private[this] type Http2FrameTransporter = Transporter[Http2Frame, Http2Frame, TransportContext]
+  private[this] type Http2FrameTransport = Transport[Http2Frame, Http2Frame]
 
   object Client {
 

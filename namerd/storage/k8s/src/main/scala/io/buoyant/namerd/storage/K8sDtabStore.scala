@@ -52,7 +52,7 @@ class K8sDtabStore(client: Http.Client, dst: String, namespace: String)
     (name(dtab), versionedDtab)
   }
 
-  private[this]type NsMap = Map[String, VersionedDtab]
+  private[this] type NsMap = Map[String, VersionedDtab]
   private[this] val dtabListToNsMap: Option[DtabList] => NsMap = {
     case Some(dtabs) => dtabs.items.map(toDtabMap)(breakOut)
     case None =>
