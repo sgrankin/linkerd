@@ -1,9 +1,10 @@
 package io.buoyant.k8s
 
-import com.fasterxml.jackson.annotation.{JsonProperty, JsonSubTypes, JsonTypeInfo, JsonIgnore}
+import com.fasterxml.jackson.annotation.{JsonIgnore, JsonProperty, JsonSubTypes, JsonTypeInfo}
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.twitter.finagle.{http, Service => FService}
 import io.buoyant.k8s.{KubeObject => BaseObject}
+
 import scala.collection.breakOut
 
 package object v1 {
