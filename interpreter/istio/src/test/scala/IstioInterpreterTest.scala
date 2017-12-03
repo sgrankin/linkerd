@@ -41,7 +41,7 @@ class IstioInterpreterTest extends FunSuite with Awaits {
   }
 
   val client = new ApiserverClient(apiserverService, 5.seconds)
-  val routeCache = new RouteCache(client)
+  val routeCache = new RouteCacheBackedByApi(client)
   val discoveryClient = new DiscoveryClient(discoveryService, 5.seconds)
 
   test("successfully parses route-rules with no route field") {

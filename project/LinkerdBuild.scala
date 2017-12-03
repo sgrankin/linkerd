@@ -466,7 +466,7 @@ object LinkerdBuild extends Base {
       .dependsOn(Namer.core, LinkerdBuild.istio, perHost, subnet)
       .withTests()
 
-    val all = aggregateDir("interpreter", fs, k8s, mesh, namerd, perHost, subnet)
+    val all = aggregateDir("interpreter", fs, istio, k8s, mesh, namerd, perHost, subnet)
   }
 
   object Linkerd {
