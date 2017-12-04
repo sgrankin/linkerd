@@ -83,7 +83,11 @@ object LinkerdBuild {
 
     val thriftIdl = projectDir("router/thrift-idl")
       .withTwitterLib(Deps.finagle("thrift"))
-      .settings(coverageExcludedPackages := ".*thriftscala.*")
+      .settings(
+        coverageExcludedPackages := ".*thriftscala.*",
+        // disable deprecation checks in generated code
+        scalacOptions += "-deprecation:false"
+      )
 
     val thrift = projectDir("router/thrift")
       .withTwitterLib(Deps.finagle("thrift"))
@@ -287,9 +291,14 @@ object LinkerdBuild {
           Storage.inMemory % "test"
         )
 
-      val interpreterThriftIdl = projectDir("namerd/iface/interpreter-thrift-idl")
-        .withTwitterLib(Deps.finagle("thrift"))
-        .settings(coverageExcludedPackages := ".*thriftscala.*")
+      val interpreterThriftIdl =
+        projectDir("namerd/iface/interpreter-thrift-idl")
+          .withTwitterLib(Deps.finagle("thrift"))
+          .settings(
+            coverageExcludedPackages := ".*thriftscala.*",
+            // disable deprecation checks in generated code
+            scalacOptions += "-deprecation:false"
+          )
 
       val interpreterThrift = projectDir("namerd/iface/interpreter-thrift")
         .dependsOn(core, interpreterThriftIdl)

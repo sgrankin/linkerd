@@ -38,7 +38,7 @@ private[h2] trait Netty4StreamTransport[SendMsg <: Message, RecvMsg <: Message] 
   import Netty4StreamTransport._
 
   /** The HTTP/2 STREAM_ID of this stream. */
-  def streamId: Int
+  def h2Stream(): Http2FrameStream
 
   /** for logging */
   protected[this] def prefix: String
@@ -494,7 +494,7 @@ private[h2] trait Netty4StreamTransport[SendMsg <: Message, RecvMsg <: Message] 
     case f => throw new IllegalArgumentException(s"invalid stream frame: ${f}")
   }
 
-  private[this] val updateWindow: Int => Future[Unit] = transport.updateWindow(streamId, _)
+  private[this] val updateWindow: Int => Future[Unit] = transport.updateWindow(h2Stream, _)
 
   /**
    * Write a `SendMsg`-typed [[Message]] to the remote.
@@ -553,7 +553,7 @@ private[h2] trait Netty4StreamTransport[SendMsg <: Message, RecvMsg <: Message] 
       case LocalOpen() =>
         if (ConnectionHeaders.detect(hdrs)) {
           Future.exception(StreamError.Local(Reset.ProtocolError))
-        } else localResetOnCancel(transport.write(streamId, hdrs, eos))
+        } else localResetOnCancel(transport.write(h2Stream, hdrs, eos))
     }
   }
 
@@ -587,7 +587,7 @@ private[h2] trait Netty4StreamTransport[SendMsg <: Message, RecvMsg <: Message] 
       case LocalClosed(_) => Future.exception(new IllegalStateException("writing on closed stream"))
       case LocalOpen() =>
         statsReceiver.recordLocalFrame(frame)
-        transport.write(streamId, frame).rescue(wrapRemoteEx)
+        transport.write(h2Stream, frame).rescue(wrapRemoteEx)
           .before(frame.release().rescue(wrapLocalEx))
     }
   }
@@ -649,26 +649,26 @@ object Netty4StreamTransport {
   object NullStatsReceiver extends StatsReceiver(FNullStatsReceiver)
 
   private class Client(
-    override val streamId: Int,
+    override val h2Stream: Http2FrameStream,
     override protected[this] val transport: H2Transport.Writer,
     override protected[this] val statsReceiver: StatsReceiver
   ) extends Netty4StreamTransport[Request, Response] {
 
     override protected[this] val prefix =
-      s"C L:${transport.localAddress} R:${transport.remoteAddress} S:${streamId}"
+      s"C L:${transport.localAddress} R:${transport.remoteAddress} S:${h2Stream}"
 
     override protected[this] def mkRecvMsg(headers: Http2Headers, stream: Stream): Response =
       Response(Netty4Message.Headers(headers), stream)
   }
 
   private class Server(
-    override val streamId: Int,
+    override val h2Stream: Http2FrameStream,
     override protected[this] val transport: H2Transport.Writer,
     override protected[this] val statsReceiver: StatsReceiver
   ) extends Netty4StreamTransport[Response, Request] {
 
     override protected[this] val prefix =
-      s"S L:${transport.localAddress} R:${transport.remoteAddress} S:${streamId}"
+      s"S L:${transport.localAddress} R:${transport.remoteAddress} S:${h2Stream}"
 
     override protected[this] def mkRecvMsg(headers: Http2Headers, stream: Stream): Request =
       Request(Netty4Message.Headers(headers), stream)

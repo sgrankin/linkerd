@@ -99,19 +99,19 @@ class Netty4ServerDispatcher(
         val rst = e match {
           case rst: Reset => rst
           case f@Failure(_) if f.isFlagged(Failure.Interrupted) =>
-            log.info(f, "[%s S:%d] interrupted; resetting remote: CANCEL", prefix, st.streamId)
+            log.info(f, "[%s S:%d] interrupted; resetting remote: CANCEL", prefix, st.h2Stream)
             Reset.Cancel
           case f@Failure(_) if f.isFlagged(Failure.Rejected) =>
-            log.info(f, "[%s S:%d] rejected; resetting remote: REFUSED", prefix, st.streamId)
+            log.info(f, "[%s S:%d] rejected; resetting remote: REFUSED", prefix, st.h2Stream)
             Reset.Refused
           case e =>
-            log.info(e, "[%s S:%d] unexpected error; resetting remote: INTERNAL_ERROR", prefix, st.streamId)
+            log.info(e, "[%s S:%d] unexpected error; resetting remote: INTERNAL_ERROR", prefix, st.h2Stream)
             Reset.InternalError
         }
         st.localReset(rst)
 
       case e =>
-        log.error(e, "[%s S:%d] ignoring exception", prefix, st.streamId)
+        log.error(e, "[%s S:%d] ignoring exception", prefix, st.h2Stream)
     }
   }
 
@@ -125,12 +125,12 @@ class Netty4ServerDispatcher(
    */
   override protected[this] def demuxNewStream(f: Http2StreamFrame): Future[Unit] = f match {
     case frame: Http2HeadersFrame =>
-      val st = newStreamTransport(frame.streamId)
+      val st = newStreamTransport(frame.stream().id())
       if (st.recv(frame)) serveStream(st)
       Future.Unit
 
     case frame =>
-      log.error("[%s S:%d] unexpected %s; sending GO_AWAY", prefix, frame.streamId, frame.name)
+      log.error("[%s S:%d] unexpected %s; sending GO_AWAY", prefix, frame.stream.id(), frame.name)
       val e = new IllegalArgumentException(s"unexpected frame on new stream: ${frame.name}")
       goAway(GoAway.ProtocolError).before(Future.exception(e))
   }

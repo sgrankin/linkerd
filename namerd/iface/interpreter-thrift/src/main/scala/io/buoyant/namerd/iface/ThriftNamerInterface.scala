@@ -377,7 +377,7 @@ class ThriftNamerInterface(
   retryIn: () => Duration,
   capacity: Capacity,
   stats: StatsReceiver
-) extends thrift.Namer.FutureIface {
+) extends thrift.Namer.MethodPerEndpoint {
   import ThriftNamerInterface._
 
   private[this] val log = Logger.get(getClass.getName)

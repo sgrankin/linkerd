@@ -6,20 +6,22 @@ object Deps {
   val curatorClient = "org.apache.curator" % "curator-client" % "2.9.1"
   val curatorDiscovery = "org.apache.curator" % "curator-x-discovery" % "2.9.1"
 
+  val twitterVersion = "17.11.0"
+
   // process lifecycle
   val twitterServer =
-    ("com.twitter" %% "twitter-server" % "1.32.0")
+    ("com.twitter" %% "twitter-server" % twitterVersion)
       .exclude("com.twitter", "finagle-zipkin_2.12")
 
   def twitterUtil(mod: String) =
-    "com.twitter" %% s"util-$mod" % "7.1.0"
+    "com.twitter" %% s"util-$mod" % twitterVersion
 
   // networking
   def finagle(mod: String) =
-    "com.twitter" %% s"finagle-$mod" % "7.1.0"
+    "com.twitter" %% s"finagle-$mod" % twitterVersion
 
   def netty4(mod: String) =
-    "io.netty" % s"netty-$mod" % "4.1.14.Final"
+    "io.netty" % s"netty-$mod" % "4.1.16.Final"
 
   val boringssl = "io.netty" % "netty-tcnative-boringssl-static" % "2.0.5.Final"
 

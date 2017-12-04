@@ -5,7 +5,7 @@ import com.twitter.conversions.time._
 import com.twitter.finagle._
 import com.twitter.finagle.client.DefaultPool
 import com.twitter.finagle.stats.{ClientStatsReceiver, NullStatsReceiver}
-import com.twitter.finagle.thrift.Protocols
+import com.twitter.finagle.thrift.{Protocols, RichClientParam}
 import com.twitter.finagle.tracing._
 import com.twitter.finagle.util.DefaultTimer
 import com.twitter.finagle.zipkin.core.Sampler
@@ -43,7 +43,7 @@ case class ZipkinConfig(
 
       val client = new Scribe.FinagledClient(
         new TracelessFilter andThen transport,
-        Protocols.binaryFactory()
+        RichClientParam(Protocols.binaryFactory())
       )
 
       val rawTracer = ScribeRawZipkinTracer(
