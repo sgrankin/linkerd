@@ -19,7 +19,7 @@ fi
 
 if [ ! -f $sbtjar ]; then
   echo "downloading $sbtjar" >&2
-  curl -L --silent --fail -o $sbtjar $sbtrepo/$sbtver/sbt-launch.jar
+  curl -L --silent --show-error --fail -o $sbtjar $sbtrepo/$sbtver/sbt-launch-$sbtver.jar
 fi
 
 if ! validjar ; then
